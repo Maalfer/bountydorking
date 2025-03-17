@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Bounty Dorks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #f4c542;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #f4c542;
+            background: #1e1e1e;
+            color: #fff;
+            text-align: center;
+        }
+        .card {
+            background: #1e1e1e;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            text-align: left;
+            position: relative;
+        }
+        .dork {
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+            display: block;
+            color: #f4c542;
+            font-family: monospace;
+            word-break: break-word;
+            position: relative;
+            text-decoration: none;
+            margin-bottom: 5px;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f4c542;
+            border: none;
+            color: #121212;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .copy-btn:hover {
+            background: #e0b02e;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>BountyDorks</h1>
+    <p>Ingresa un dominio para generar dorks personalizados:</p>
+    
+    <input type="text" id="domainInput" placeholder="Ejemplo: post.ch" oninput="updateDorks()">
+
+    <div class="container" id="dorkList"></div>
+
+    <footer>
+        <p>Creado por un Pinguino <a href="https://www.linkedin.com/in/maalfer1/" target="_blank"><i class="fab fa-linkedin"></i></a></p>
+    </footer>
+
+    <script>
+        const dorks = [
+            { 
+                title: "🔎 Encontrar Subdominios", 
+                queries: [
+                    "site:{domain} -www",
+                    "site:*.{domain}",
+                    "inurl:{domain} -www"
+                ]
+            },
+            { 
+                title: "📄 Documentos Sensibles", 
+                queries: [
+                    "site:{domain} filetype:pdf OR filetype:xls OR filetype:doc",
+                    "site:{domain} filetype:ppt OR filetype:txt OR filetype:csv",
+                    "site:{domain} intext:'confidential' OR intext:'internal use only'"
+                ]
+            },
+            { 
+                title: "💾 Bases de Datos", 
+                queries: [
+                    "site:{domain} filetype:sql OR filetype:db OR filetype:sqlite",
+                    "site:{domain} inurl:phpmyadmin OR inurl:dbadmin",
+                    "site:{domain} intext:'MySQL dump' OR intext:'PostgreSQL backup'",
+                    "site:{domain} filetype:sql inurl:backup",
+                    "site:{domain} filetype:sql inurl:dump",
+                    "site:{domain} inurl:phpmyadmin OR inurl:adminer OR inurl:mysqladmin",
+                    "site:{domain} inurl:dbexport OR inurl:db-backup",
+                    "site:{domain} intext:'-- MySQL dump' OR intext:'-- PostgreSQL backup'",
+                    "site:{domain} inurl:'.sql' intext:'-- Created by mysqldump'",
+                    "site:{domain} intext:'Database dump' OR intext:'Database backup' OR intext:'DB dump'",
+                    "site:{domain} inurl:'.bak' OR inurl:'.sql.bak' OR inurl:'.db.bak'",
+                    "site:{domain} filetype:sql inurl:'/admin/'",
+                    "site:{domain} inurl:'.sql' AND intext:'Dump file'",
+                    "site:{domain} inurl:'.zip' intext:'Database backup' OR intext:'DB dump'",
+                    "site:{domain} inurl:'backup' intext:'database' OR intext:'DB' OR intext:'dump'",
+                    "site:{domain} filetype:sql inurl:'dump' AND intext:'password' OR intext:'username'",
+                    "site:{domain} inurl:'~user' AND intext:'database dump' OR intext:'sql backup'",
+                    "site:{domain} inurl:'.tar' intext:'database backup' OR intext:'database dump'",
+
+                ]
+            },
+            { 
+                title: "🔄 Copias de Seguridad", 
+                queries: [
+                    "site:{domain} filetype:bak OR filetype:zip OR filetype:tar OR filetype:gz OR filetype:rar OR filetype:7z",
+                    "site:{domain} inurl:backup OR inurl:backups OR inurl:archive OR inurl:dump",
+                    "intitle:'index of' 'backup' site:{domain}",
+                    "intitle:'index of' 'db_backups' site:{domain}",
+                    "site:{domain} inurl:db_backup OR inurl:database_backup",
+                    "site:{domain} filetype:sql OR filetype:db OR filetype:sqlite",
+                    "site:{domain} intext:'backup file' OR intext:'database dump'",
+                    "site:{domain} inurl:old_backup OR inurl:backup_old",
+                    "site:{domain} filetype:tar.gz OR filetype:sql.gz OR filetype:dump"
+                ]
+            },
+            { 
+                title: "🛑 Logs y Errores", 
+                queries: [
+                    "site:{domain} filetype:log",
+                    "site:{domain} 'error_log'",
+                    "site:{domain} intext:'PHP Fatal error'",
+                    "site:{domain} intext:'Exception' OR intext:'Traceback'",
+                    "site:{domain} intext:'server.log' OR intext:'access.log'",
+                    "site:{domain} filetype:txt intext:'error' OR intext:'log'",
+                    "site:{domain} inurl:/logs/ OR inurl:/log/",
+                    "site:{domain} intext:'failed password' OR intext:'authentication failed'",
+                    "site:{domain} intext:'SQL syntax error' OR intext:'database error'",
+                    "site:{domain} intext:'stack trace' OR intext:'uncaught exception'"
+                ]
+            },
+            { 
+                title: "🔑 Claves API y Credenciales", 
+                queries: [
+                    "site:{domain} intext:'API_KEY' OR intext:'TOKEN'",
+                    "site:{domain} filetype:json intext:'password'",
+                    "site:{domain} filetype:env intext:'DB_PASSWORD' OR intext:'AWS_SECRET_ACCESS_KEY'",
+                    "site:{domain} filetype:xml intext:'apikey'",
+                    "site:{domain} filetype:yaml intext:'API_SECRET'",
+                    "site:{domain} filetype:ini intext:'password'",
+                    "site:{domain} filetype:config intext:'secret'",
+                    "site:{domain} filetype:txt intext:'api_key'",
+                    "site:github.com {domain} intext:'token'",
+                    "site:gitlab.com {domain} intext:'PRIVATE_KEY'",
+                    "site:bitbucket.org {domain} intext:'ACCESS_TOKEN'",
+                    "site:pastebin.com {domain} intext:'API_KEY'",
+                    "site:{domain} inurl:'.git'"
+                ]
+            },
+            { 
+                title: "☁ AWS Buckets", 
+                queries: [
+                    "site:{domain} inurl:s3.amazonaws.com",
+                    "site:{domain} inurl:.s3.amazonaws.com",
+                    "site:{domain} inurl:s3-us-west-2.amazonaws.com",
+                    "intitle:'index of' 's3' site:{domain}",
+                    "site:{domain} intext:'aws_access_key_id' intext:'aws_secret_access_key'",
+                    "site:{domain} filetype:json 's3.amazonaws.com'",
+                    "site:{domain} filetype:yaml 'aws_access_key_id'",
+                    "site:{domain} filetype:xml intext:'ListBucketResult'",
+                    "site:{domain} intext:'Amazon S3 Bucket Name' intext:'public'",
+                    "site:{domain} inurl:/.aws/credentials",
+                    "site:{domain} filetype:config 'AWS_SECRET_ACCESS_KEY'",
+                    "site:pastebin.com '{domain} AWS_SECRET_ACCESS_KEY'"
+                ]
+            },
+            { 
+                title: "⚙ Paneles de Administración", 
+                queries: [
+                    "site:{domain} inurl:admin",
+                    "site:{domain} inurl:dashboard",
+                    "site:{domain} inurl:login OR inurl:portal"
+                ]
+            }
+        ];
+
+        function updateDorks() {
+            const domain = document.getElementById("domainInput").value.trim();
+            const dorkList = document.getElementById("dorkList");
+            dorkList.innerHTML = "";
+
+            if (!domain) return;
+
+            dorks.forEach((category, catIndex) => {
+                const card = document.createElement("div");
+                card.className = "card";
+
+                let cardContent = `<h2>${category.title}</h2>`;
+
+                category.queries.forEach((query, index) => {
+                    const queryText = query.replace("{domain}", domain);
+                    const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(queryText)}`;
+                    
+                    cardContent += `
+                        <a href="${googleSearchUrl}" target="_blank" class="dork" id="dork${catIndex}_${index}">${queryText}</a>
+                        <button class="copy-btn" onclick="copyToClipboard('dork${catIndex}_${index}')">Copiar</button>
+                    `;
+                });
+
+                card.innerHTML = cardContent;
+                dorkList.appendChild(card);
+            });
+        }
+
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copiado: " + text);
+            });
+        }
+    </script>
+
+</body>
+</html>
