@@ -144,6 +144,26 @@
                     "site:{domain} filetype:tar.gz OR filetype:sql.gz OR filetype:dump"
                 ]
             },
+            {
+                title: "🔄 Open Redirect", 
+                queries: [
+                    "site:{domain} inurl:redir",
+                    "site:{domain} inurl:url=",
+                    "site:{domain} inurl:return=",
+                    "site:{domain} inurl:r=",
+                    "site:{domain} inurl:q=",
+                    "site:{domain} inurl=redirect",
+                    "site:{domain} inurl=/out?",
+                    "site:{domain} inurl=/external?",
+                    "site:{domain} inurl=next=",
+                    "site:{domain} inurl=callback=",
+                    "site:{domain} inurl=goto=",
+                    "site:{domain} inurl=forward=",
+                    "site:{domain} inurl=to=",
+                    "site:{domain} inurl=continue=",
+                    "site:{domain} inurl=/cgi-bin/redirect.cgi?"
+                ]
+            },
             { 
                 title: "🛑 Logs y Errores", 
                 queries: [
